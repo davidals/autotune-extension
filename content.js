@@ -168,18 +168,36 @@ document.addEventListener('focusin', (event) => {
 });
 
 // 3) Listen for popup requests for current text
+// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+//   if (message.type === 'GET_FOCUSED_TEXT') {
+//     let text = '';
+//     if (lastFocusedElement) {
+//       if (lastFocusedElement.tagName === 'INPUT' || lastFocusedElement.tagName === 'TEXTAREA') {
+//         text = lastFocusedElement.value;
+//       } else {
+//         text = lastFocusedElement.innerText;
+//       }
+//     }
+//     sendResponse({ text });
+//     // Return true indicates asynchronous response (though not needed if we respond immediately)
+//     return true;
+//   }
+// });
+
+
+function getSlackFormattedText() {
+  const slackEditor = document.querySelector('.ql-editor[contenteditable="true"]');
+  if (!slackEditor) {
+    console.log("Slack editor not found.");
+    return null;
+  }
+  return slackEditor.innerHTML.trim(); // Extract HTML content
+}
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'GET_FOCUSED_TEXT') {
-    let text = '';
-    if (lastFocusedElement) {
-      if (lastFocusedElement.tagName === 'INPUT' || lastFocusedElement.tagName === 'TEXTAREA') {
-        text = lastFocusedElement.value;
-      } else {
-        text = lastFocusedElement.innerText;
-      }
-    }
-    sendResponse({ text });
-    // Return true indicates asynchronous response (though not needed if we respond immediately)
+    const formattedText = getSlackFormattedText();
+    sendResponse({ text: formattedText || "No text captured." });
     return true;
   }
 });
