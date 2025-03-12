@@ -1,0 +1,55 @@
+{
+    "name": "Autotune",
+    "description": "Change the tone of your messages",
+    "version": "1.0",
+    "manifest_version": 3,
+  
+    "permissions": [
+      "tabs",
+      "storage",
+      "scripting"
+    ],
+
+    "host_permissions": [
+      "https://app.slack.com/*"
+    ],
+  
+    "background": {
+      "service_worker": "background.js"
+    },
+  
+    "options_page": "options.html",
+
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+        "16": "icons/16.png",
+        "48": "icons/32.png",
+        "128": "icons/128.png"
+      }
+    },
+  
+    "icons": {
+        "16": "icons/16.png",
+        "48": "icons/32.png",
+        "128": "icons/128.png"
+    },
+  
+    "content_scripts": [
+      {
+        "matches": ["https://app.slack.com/*"],
+        "js": ["content.js"],
+        "css": ["content.css"],
+        "run_at": "document_idle",
+        "all_frames": true
+      }
+    ],
+
+    "web_accessible_resources": [
+    {
+      "resources": ["icons/16.png", "icons/32.png", "icons/128.png"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+  }
+  

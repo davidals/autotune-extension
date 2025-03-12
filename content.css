@@ -1,0 +1,17 @@
+.autotune-icon {
+    width: 16px;
+    height: 16px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999999; /* ensure it appears on top */
+  }
+  .autotune-icon:hover {
+    background-color: #eee;
+    cursor: pointer;
+  }
+  
