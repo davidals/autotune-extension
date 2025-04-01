@@ -1,7 +1,7 @@
 import { OpenAIService } from '../services/openaiService.js';
 import { TextFormatter } from '../utils/textFormatter.js';
 
-class PopupManager {
+export class PopupManager {
   constructor() {
     this.textContainer = document.getElementById('text-container');
     this.actionButton = document.getElementById('action-button');
