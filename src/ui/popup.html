@@ -31,7 +31,7 @@
               </div>
               <div class="slider-container">
                 <span class="label">Concise</span>
-                <input type="range" id="verbosity" min="0" max="100" value="50" class="slider">
+                <input type="range" id="verbosity-slider" min="0" max="100" value="50" class="slider">
                 <span class="label">Verbose</span>
               </div>
             </div>
@@ -42,7 +42,7 @@
               </div>
               <div class="slider-container">
                 <span class="label">Casual</span>
-                <input type="range" id="formality" min="0" max="100" value="50" class="slider">
+                <input type="range" id="formality-slider" min="0" max="100" value="50" class="slider">
                 <span class="label">Formal</span>
               </div>
             </div>
@@ -96,9 +96,6 @@
       </div>
     </div>
     <script src="../lib/marked.min.js"></script>
-    <script>
-      console.log('Autotune: popup.html loaded');
-    </script>
-    <script type="module" src="popup.js"></script>
+    <script type="module" src="popup-init.js"></script>
   </body>
 </html>
