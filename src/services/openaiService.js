@@ -2,12 +2,28 @@
  * Service for interacting with OpenAI's API
  */
 
+import { EnhancementParams } from './enhancementParams.js';
+
 export class OpenAIService {
-  constructor() {
+  constructor(enhancementParams = new EnhancementParams()) {
     this.apiKey = null;
     this.model = 'gpt-3.5-turbo'; // Default to cheapest model
     this.validModels = ['gpt-3.5-turbo', 'gpt-4', 'gpt-4-turbo'];
-    this.loadApiKey(); // Load API key on initialization
+    this.enhancementParams = enhancementParams;
+  }
+
+  /**
+   * Initialize the service by loading the API key
+   */
+  async initialize() {
+    try {
+      const { apiKey } = await chrome.storage.sync.get('apiKey');
+      if (apiKey) {
+        this.apiKey = apiKey;
+      }
+    } catch (error) {
+      console.error('Failed to load API key:', error);
+    }
   }
 
   async loadApiKey() {
@@ -60,7 +76,24 @@ export class OpenAIService {
   }
 
   /**
-   * Enhances text using OpenAI's GPT model
+   * Generate the system prompt with enhancement parameters
+   * @returns {string} The system prompt
+   */
+  _generateSystemPrompt() {
+    const params = this.enhancementParams.getPromptParameters();
+    
+    return `You are a professional writing assistant. Enhance the provided text according to these parameters:
+- Verbosity: ${params.verbosity}% (0: very concise, 100: very detailed)
+- Formality: ${params.formality}% (0: very casual, 100: very formal)
+- Tone: ${params.tone}% (0: very serious, 100: very friendly)
+- Creativity: ${params.creativity}% (0: conservative, 100: creative)
+- Persuasiveness: ${params.persuasiveness}% (0: neutral, 100: very persuasive)
+
+Please enhance the text while maintaining its core meaning and structure.`;
+  }
+
+  /**
+   * Enhance text using OpenAI API
    * @param {string} text - The text to enhance
    * @returns {Promise<string>} The enhanced text
    */
@@ -80,15 +113,14 @@ export class OpenAIService {
         messages: [
           {
             role: 'system',
-            content: 'You are a helpful assistant that improves the tone and clarity of text while maintaining its meaning. Make the text more professional, friendly, and engaging.'
+            content: this._generateSystemPrompt()
           },
           {
             role: 'user',
             content: text
           }
         ],
-        temperature: 0.7,
-        max_tokens: 1000
+        temperature: 0.7
       })
     });
 
