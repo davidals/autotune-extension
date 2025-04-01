@@ -74,19 +74,21 @@
                 <span class="label">Convincing</span>
               </div>
             </div>
+            <div id="status-message" class="status-message"></div>
           </div>
         </div>
 
         <div class="text-section">
           <div class="button-section">
-            <div id="status-message" class="status-message"></div>
-            <button id="action-button" class="enhance">
-              <div class="spinner"></div>
-              <span>Enhance</span>
-            </button>
-            <div class="action-buttons" style="display: none;">
-              <button id="revert-button" class="revert">Revert</button>
-              <button id="accept-button" class="accept">Accept</button>
+            <div class="buttons">
+              <div class="button-container">
+                <div id="loading-spinner" class="spinner" style="display: none;"></div>
+                <button id="enhance-button" class="enhance">
+                  <span>Enhance</span>
+                </button>
+              </div>
+              <button id="revert-button" class="revert" style="display: none;">Revert</button>
+              <button id="accept-button" class="accept" style="display: none;">Accept</button>
             </div>
           </div>
           <div id="text-container"></div>

@@ -8,13 +8,12 @@ export class PopupManager {
   constructor() {
     console.log('autotune.popup: Initializing PopupManager');
     this.textContainer = document.getElementById('text-container');
-    this.actionButton = document.getElementById('action-button');
+    this.enhanceButton = document.getElementById('enhance-button');
     this.revertButton = document.getElementById('revert-button');
     this.acceptButton = document.getElementById('accept-button');
-    this.actionButtons = document.querySelector('.action-buttons');
+    this.loadingSpinner = document.getElementById('loading-spinner');
     this.originalText = '';
     this.enhancedText = '';
-    this.currentState = 'original';
     this.openaiService = new OpenAIService();
     this.enhancementParams = new EnhancementParams();
     this.activeTabId = null;
@@ -31,7 +30,7 @@ export class PopupManager {
       if (!hasApiKey) {
         console.log('autotune.popup: No API key found');
         this.textContainer.textContent = 'API key missing. Please set it in options.';
-        this.actionButton.disabled = true;
+        this.enhanceButton.disabled = true;
         return;
       }
 
@@ -51,7 +50,7 @@ export class PopupManager {
     } catch (error) {
       console.error('autotune.popup: Initialization error:', error);
       this.textContainer.textContent = 'Error initializing. Please try again.';
-      this.actionButton.disabled = true;
+      this.enhanceButton.disabled = true;
     }
   }
 
@@ -125,15 +124,20 @@ export class PopupManager {
       });
     }
 
-    this.actionButton.addEventListener('click', () => {
+    this.enhanceButton.addEventListener('click', (e) => {
+      e.stopPropagation();
       console.log('autotune.popup: Enhance button clicked');
       this.handleEnhancement();
     });
-    this.revertButton.addEventListener('click', () => {
+
+    this.revertButton.addEventListener('click', (e) => {
+      e.stopPropagation();
       console.log('autotune.popup: Revert button clicked');
       this.handleRevert();
     });
-    this.acceptButton.addEventListener('click', () => {
+
+    this.acceptButton.addEventListener('click', (e) => {
+      e.stopPropagation();
       console.log('autotune.popup: Accept button clicked');
       this.handleAccept();
     });
@@ -157,7 +161,7 @@ export class PopupManager {
       if (chrome.runtime.lastError) {
         console.error('autotune.popup: Error getting focused text:', chrome.runtime.lastError);
         this.textContainer.textContent = 'No text or no permission.';
-        this.actionButton.disabled = true;
+        this.enhanceButton.disabled = true;
         return;
       }
 
@@ -165,23 +169,23 @@ export class PopupManager {
       if (!this.originalText) {
         console.log('autotune.popup: No text captured');
         this.textContainer.textContent = 'No text captured.';
-        this.actionButton.disabled = true;
+        this.enhanceButton.disabled = true;
         return;
       }
 
       console.log('autotune.popup: Text captured successfully');
       this.textContainer.textContent = this.originalText;
-      this.updateButtonState('original');
+      this.hideActionButtons();
     } catch (error) {
       console.error('autotune.popup: Error loading focused text:', error);
       this.textContainer.textContent = 'Error: Could not access the page.';
-      this.actionButton.disabled = true;
+      this.enhanceButton.disabled = true;
     }
   }
 
   async enhanceMessage() {
-    this.actionButton.disabled = true;
-    this.actionButton.textContent = 'Enhancing...';
+    this.enhanceButton.disabled = true;
+    this.enhanceButton.textContent = 'Enhancing...';
     this.currentState = 'enhancing';
 
     try {
@@ -241,54 +245,91 @@ export class PopupManager {
     }
   }
 
-  revertMessage() {
-    this.textContainer.textContent = this.originalText;
-    this.updateButtonState('original');
+  async handleRevert() {
+    try {
+      this.showStatus('Reverting changes...', 'info');
+      
+      // Revert the popup text
+      this.textContainer.textContent = this.originalText;
+      
+      // Send revert message to content script
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      
+      if (!tab.url.startsWith('chrome://') && !tab.url.startsWith('chrome-extension://')) {
+        await chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          files: ['src/core/content.js']
+        });
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      await chrome.tabs.sendMessage(tab.id, {
+        type: 'REPLACE_FOCUSED_TEXT',
+        text: this.originalText
+      });
+      
+      this.hideActionButtons();
+      this.showStatus('Changes reverted', 'success');
+    } catch (error) {
+      console.error('autotune.popup: Error reverting changes:', error);
+      this.showStatus(error.message, 'error');
+    }
+  }
+
+  async handleAccept() {
+    try {
+      this.showStatus('Accepting changes...', 'info');
+      await this.acceptMessage();
+      this.hideActionButtons();
+      this.showStatus('Changes accepted', 'success');
+    } catch (error) {
+      console.error('autotune.popup: Error accepting changes:', error);
+      this.showStatus(error.message, 'error');
+    }
   }
 
   updateButtonState(state) {
     this.currentState = state;
-    this.actionButton.disabled = false;
+    this.enhanceButton.disabled = false;
     
     switch (state) {
       case 'original':
-        this.actionButton.textContent = 'Enhance Message';
-        this.actionButton.className = 'enhance';
+        this.enhanceButton.textContent = 'Enhance Message';
+        this.enhanceButton.className = 'enhance';
         break;
       case 'enhanced':
-        this.actionButton.textContent = 'Accept Changes';
-        this.actionButton.className = 'accept';
+        this.enhanceButton.textContent = 'Accept Changes';
+        this.enhanceButton.className = 'accept';
         break;
       case 'reverting':
-        this.actionButton.textContent = 'Revert to Original';
-        this.actionButton.className = 'revert';
+        this.enhanceButton.textContent = 'Revert to Original';
+        this.enhanceButton.className = 'revert';
         break;
       case 'enhancing':
-        this.actionButton.textContent = 'Enhancing...';
-        this.actionButton.className = 'enhance';
+        this.enhanceButton.textContent = 'Enhancing...';
+        this.enhanceButton.className = 'enhance';
         break;
     }
   }
 
   showActionButtons() {
-    this.actionButton.style.display = 'none';
-    this.actionButtons.style.display = 'flex';
-    this.revertButton.disabled = false;
-    this.acceptButton.disabled = false;
+    this.enhanceButton.style.display = 'none';
+    this.revertButton.style.display = 'inline-block';
+    this.acceptButton.style.display = 'inline-block';
   }
 
   hideActionButtons() {
-    this.actionButton.style.display = 'block';
-    this.actionButtons.style.display = 'none';
-    this.revertButton.disabled = true;
-    this.acceptButton.disabled = true;
+    this.enhanceButton.style.display = 'inline-block';
+    this.revertButton.style.display = 'none';
+    this.acceptButton.style.display = 'none';
   }
 
   async handleEnhancement() {
     try {
       // Disable button and show loading state immediately
-      this.actionButton.disabled = true;
-      this.actionButton.classList.add('loading');
+      this.enhanceButton.disabled = true;
+      this.loadingSpinner.style.display = 'block';
       this.showStatus('Enhancing text...', 'info');
       
       const params = {};
@@ -323,28 +364,10 @@ export class PopupManager {
     } catch (error) {
       console.error('autotune.popup: Enhancement error:', error);
       this.showStatus(error.message, 'error');
-      this.actionButton.disabled = false;
+      this.enhanceButton.disabled = false;
     } finally {
-      // Remove loading state
-      this.actionButton.classList.remove('loading');
-    }
-  }
-
-  handleRevert() {
-    this.revertMessage();
-    this.hideActionButtons();
-    this.showStatus('Changes reverted', 'info');
-  }
-
-  async handleAccept() {
-    try {
-      this.showStatus('Accepting changes...', 'info');
-      await this.acceptMessage();
-      this.hideActionButtons();
-      this.showStatus('Changes accepted', 'success');
-    } catch (error) {
-      console.error('autotune.popup: Error accepting changes:', error);
-      this.showStatus(error.message, 'error');
+      // Hide loading spinner
+      this.loadingSpinner.style.display = 'none';
     }
   }
 
