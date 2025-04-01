@@ -89,60 +89,22 @@ class PopupManager {
     this.actionButton.textContent = 'Enhancing...';
     this.currentState = 'enhancing';
 
-    chrome.storage.sync.get('openaiApiKey', async (data) => {
-      if (!data.openaiApiKey) {
-        this.textContainer.textContent = 'API key missing. Please set it in options.';
-        this.updateButtonState('original');
-        return;
-      }
-
-      const apiKey = data.openaiApiKey;
-
-      try {
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`,
-          },
-          body: JSON.stringify({
-            model: 'gpt-3.5-turbo',
-            messages: [
-              {
-                role: 'system',
-                content: `Help me refine my communication.
-
-I want to improve the clarity and tone of my messages while keeping the original intent and opinions intact.
-
-- Make the language less aggressive, more positive, and inviting.
-- Keep the message concise, clear, and easy to read (avoid excessive verbosity or complex words).
-- Maintain a professional yet friendly tone.
-- Do not change quotes (lines that start with '>').
-
-I will provide a message I wrote, and you will return a refined version of it in Markdown format—without any additional commentary.`,
-              },
-              { role: 'user', content: this.originalText },
-            ],
-            max_tokens: 500,
-          }),
-        });
-
-        const result = await response.json();
-
-        if (result.choices && result.choices[0].message) {
-          this.enhancedText = result.choices[0].message.content;
-          this.textContainer.innerHTML = marked.parse(this.enhancedText);
-          this.updateButtonState('enhanced');
-        } else {
-          this.textContainer.textContent = 'Error processing the request.';
-          this.updateButtonState('original');
-        }
-      } catch (error) {
-        console.error('OpenAI API error:', error);
-        this.textContainer.textContent = 'Failed to fetch improved text.';
+    try {
+      const result = await this.openaiService.enhanceText(this.originalText);
+      
+      if (result) {
+        this.enhancedText = result;
+        this.textContainer.innerHTML = marked.parse(this.enhancedText);
+        this.updateButtonState('enhanced');
+      } else {
+        this.textContainer.textContent = 'Error processing the request.';
         this.updateButtonState('original');
       }
-    });
+    } catch (error) {
+      console.error('OpenAI API error:', error);
+      this.textContainer.textContent = 'Failed to fetch improved text.';
+      this.updateButtonState('original');
+    }
   }
 
   async acceptMessage() {
