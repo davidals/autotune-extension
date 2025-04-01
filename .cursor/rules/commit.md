@@ -106,49 +106,56 @@ If commit fails:
 
 # Commit Rules for Cursor AI
 
-## Core Rule: Commit Between User Prompts
+## Core Rule
+A commit must be made after responding to a user prompt and before waiting for the next one, but only after verifying that all tests pass.
 
-The fundamental rule is that a commit MUST be made after responding to a user prompt and before waiting for the next one.
+## When to Commit
+1. After making changes in response to a user prompt
+2. After running `npm test` and confirming all tests pass
+3. Before proceeding to the next user prompt
 
-### Process
+## Process
+1. Make the requested changes
+2. Run `npm test` to verify all tests pass
+3. If tests fail:
+   - Fix the failing tests
+   - Run tests again
+   - Only proceed to commit once all tests pass
+4. Create a commit with:
+   - A descriptive message following conventional commits format
+   - Details of what was changed
+   - Mention of test verification
 
-1. User provides a prompt
-2. AI makes necessary changes to satisfy the prompt
-3. AI MUST create a commit for those changes
-4. Only then can AI wait for the next prompt
+## Exception Handling
+- If the user rejects a commit, revert the changes and wait for further instructions
+- If tests are failing and cannot be fixed immediately, inform the user and seek guidance
+- Do not commit code that has failing tests
 
-### What to Include in Each Commit
+## Examples
 
-- All changes made in response to the user's prompt
-- Changes can span multiple files if they're part of the same logical change
-- Follow conventional commit format
-
-### When to Commit
-
-✅ DO commit:
-- After completing all changes for a user prompt
-- Before waiting for the next user prompt
-- When the user explicitly requests a commit
-
-❌ DO NOT:
-- Wait for the user to ask for a commit
-- Move on to the next prompt without committing
-- Split changes from a single prompt into multiple commits (unless explicitly requested)
-
-### Example Flow
-
+Good Flow:
 ```
-User: "Fix the module loading issue"
-AI: *makes changes to multiple files*
+User: "Update the popup component"
+AI: *makes changes*
+AI: *runs tests*
+AI: *tests pass*
 AI: *creates commit*
-AI: "Changes have been committed. What would you like me to do next?"
-User: "Update the documentation"
-...
+AI: "Changes committed successfully. What would you like me to do next?"
 ```
 
-### Exception Handling
+Bad Flow:
+```
+User: "Update the popup component"
+AI: *makes changes*
+AI: *creates commit without running tests*
+AI: "Changes committed. What's next?"
+```
 
-If the user rejects a commit or requests changes:
-1. Address the requested changes
-2. Create a new commit
-3. Wait for user confirmation before proceeding to next prompt 
+Test Failure Flow:
+```
+User: "Update the popup component"
+AI: *makes changes*
+AI: *runs tests*
+AI: *tests fail*
+AI: "The changes I made caused test failures. Would you like me to fix them before committing?"
+``` 
