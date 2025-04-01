@@ -11,17 +11,18 @@
     ],
 
     "host_permissions": [
-      "https://app.slack.com/*"
+      "*://*/*"
     ],
   
     "background": {
-      "service_worker": "background.js"
+      "service_worker": "src/core/background.js",
+      "type": "module"
     },
   
-    "options_page": "options.html",
+    "options_page": "src/ui/options.html",
 
     "action": {
-      "default_popup": "popup.html",
+      "default_popup": "src/ui/popup.html",
       "default_icon": {
         "16": "icons/16.png",
         "48": "icons/32.png",
@@ -37,9 +38,11 @@
   
     "content_scripts": [
       {
-        "matches": ["https://app.slack.com/*"],
-        "js": ["content.js"],
-        "css": ["content.css"],
+        "matches": [
+          "*://*/*" // Apply content script on all websites
+        ],
+        "js": ["src/core/content.js"],
+        "css": ["src/ui/content.css"],
         "run_at": "document_idle",
         "all_frames": true
       }
@@ -47,7 +50,13 @@
 
     "web_accessible_resources": [
     {
-      "resources": ["icons/16.png", "icons/32.png", "icons/128.png"],
+      "resources": [
+        "icons/16.png",
+        "icons/32.png",
+        "icons/128.png",
+        "src/services/*.js",
+        "src/utils/*.js"
+      ],
       "matches": ["<all_urls>"]
     }
   ]

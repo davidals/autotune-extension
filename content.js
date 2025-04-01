@@ -185,19 +185,44 @@ document.addEventListener('focusin', (event) => {
 // });
 
 
-function getSlackFormattedText() {
-  const slackEditor = document.querySelector('.ql-editor[contenteditable="true"]');
-  if (!slackEditor) {
-    console.log("Slack editor not found.");
-    return null;
+function getQuillEditor() {
+  // Detect Quill.js editors
+  const quillEditors = document.querySelectorAll('.ql-editor[contenteditable="true"]');
+
+  // Find the focused Quill editor
+  for (let editor of quillEditors) {
+    if (document.activeElement === editor) {
+      return editor;
+    }
   }
-  return slackEditor.innerHTML.trim(); // Extract HTML content
+
+  return null; // No active Quill editor found
+}
+
+function getGenericTextInput() {
+  const activeElement = document.activeElement;
+  if (
+    (activeElement.tagName === 'INPUT' && activeElement.type === 'text') ||
+    activeElement.tagName === 'TEXTAREA' ||
+    activeElement.isContentEditable ||
+    activeElement.getAttribute('role') === 'textbox'
+  ) {
+    return activeElement;
+  }
+  return null;
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'GET_FOCUSED_TEXT') {
-    const formattedText = getSlackFormattedText();
-    sendResponse({ text: formattedText || "No text captured." });
+    let editor = getQuillEditor() || getGenericTextInput();
+    sendResponse({ text: editor ? editor.innerText.trim() : "No text captured." });
     return true;
+  }
+
+  if (message.type === 'REPLACE_FOCUSED_TEXT') {
+    let editor = getQuillEditor() || getGenericTextInput();
+    if (editor) {
+      editor.innerText = message.text.trim(); // Insert markdown text
+    }
   }
 });
