@@ -37,6 +37,15 @@ export class PopupManager {
 
       console.log('autotune.popup: API key found, loading parameters...');
       await this.loadSavedParameters();
+      
+      // Load the saved model
+      await this.openaiService.loadModel();
+      const currentModel = await this.openaiService.getModel();
+      if (this.modelSelect && currentModel) {
+        this.modelSelect.value = currentModel;
+        console.log('autotune.popup: Loaded model:', currentModel);
+      }
+      
       this.setupEventListeners();
       await this.loadFocusedText();
     } catch (error) {
@@ -290,6 +299,9 @@ export class PopupManager {
         ...params,
         model
       });
+      
+      // Set the model before enhancing
+      await this.openaiService.setModel(model);
       
       const enhancedText = await this.openaiService.enhanceText(
         this.textContainer.textContent,
