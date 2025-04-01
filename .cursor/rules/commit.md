@@ -103,3 +103,52 @@ If commit fails:
 3. Ensure proper permissions
 4. Check git configuration
 5. Retry commit with corrected information 
+
+# Commit Rules for Cursor AI
+
+## Core Rule: Commit Between User Prompts
+
+The fundamental rule is that a commit MUST be made after responding to a user prompt and before waiting for the next one.
+
+### Process
+
+1. User provides a prompt
+2. AI makes necessary changes to satisfy the prompt
+3. AI MUST create a commit for those changes
+4. Only then can AI wait for the next prompt
+
+### What to Include in Each Commit
+
+- All changes made in response to the user's prompt
+- Changes can span multiple files if they're part of the same logical change
+- Follow conventional commit format
+
+### When to Commit
+
+✅ DO commit:
+- After completing all changes for a user prompt
+- Before waiting for the next user prompt
+- When the user explicitly requests a commit
+
+❌ DO NOT:
+- Wait for the user to ask for a commit
+- Move on to the next prompt without committing
+- Split changes from a single prompt into multiple commits (unless explicitly requested)
+
+### Example Flow
+
+```
+User: "Fix the module loading issue"
+AI: *makes changes to multiple files*
+AI: *creates commit*
+AI: "Changes have been committed. What would you like me to do next?"
+User: "Update the documentation"
+...
+```
+
+### Exception Handling
+
+If the user rejects a commit or requests changes:
+1. Address the requested changes
+2. Create a new commit
+3. Wait for user confirmation before proceeding to next prompt 
