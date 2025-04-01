@@ -5,11 +5,11 @@
 import { EnhancementParams } from './enhancementParams.js';
 
 export class OpenAIService {
-  constructor(enhancementParams = new EnhancementParams()) {
-    this.apiKey = null;
+  constructor(apiKey = null) {
+    this.apiKey = apiKey;
     this.model = 'gpt-3.5-turbo'; // Default to cheapest model
     this.validModels = ['gpt-3.5-turbo', 'gpt-4', 'gpt-4-turbo'];
-    this.enhancementParams = enhancementParams;
+    this.enhancementParams = new EnhancementParams();
   }
 
   /**
@@ -20,10 +20,30 @@ export class OpenAIService {
       const { openaiApiKey } = await chrome.storage.sync.get('openaiApiKey');
       if (openaiApiKey) {
         this.apiKey = openaiApiKey;
+        return true;
       }
+      return false;
     } catch (error) {
       console.error('Failed to load API key:', error);
+      return false;
     }
+  }
+
+  /**
+   * Set the API key
+   */
+  setApiKey(apiKey) {
+    if (!apiKey) {
+      throw new Error('API key is required');
+    }
+    this.apiKey = apiKey;
+  }
+
+  /**
+   * Check if the service has a valid API key
+   */
+  hasValidApiKey() {
+    return !!this.apiKey;
   }
 
   async loadApiKey() {
@@ -41,15 +61,6 @@ export class OpenAIService {
       if (result?.openaiModel && this.validModels.includes(result.openaiModel)) {
         this.model = result.openaiModel;
       }
-    } catch (error) {
-      throw new Error('Storage error');
-    }
-  }
-
-  async setApiKey(apiKey) {
-    try {
-      this.apiKey = apiKey;
-      await chrome.storage.sync.set({ openaiApiKey: apiKey });
     } catch (error) {
       throw new Error('Storage error');
     }

@@ -8,24 +8,30 @@ export class PopupManager {
     this.originalText = '';
     this.enhancedText = '';
     this.currentState = 'original';
-    this.openaiService = null;
+    this.openaiService = new OpenAIService();
     this.activeTabId = null;
 
     this.initialize();
   }
 
   async initialize() {
-    // Get API key from storage
-    const { openaiApiKey } = await chrome.storage.sync.get('openaiApiKey');
-    if (!openaiApiKey) {
-      this.textContainer.textContent = 'API key missing. Please set it in options.';
-      this.actionButton.disabled = true;
-      return;
-    }
+    try {
+      // Initialize OpenAI service
+      const hasApiKey = await this.openaiService.initialize();
+      
+      if (!hasApiKey) {
+        this.textContainer.textContent = 'API key missing. Please set it in options.';
+        this.actionButton.disabled = true;
+        return;
+      }
 
-    this.openaiService = new OpenAIService(openaiApiKey);
-    this.setupEventListeners();
-    await this.loadFocusedText();
+      this.setupEventListeners();
+      await this.loadFocusedText();
+    } catch (error) {
+      console.error('Initialization error:', error);
+      this.textContainer.textContent = 'Error initializing. Please try again.';
+      this.actionButton.disabled = true;
+    }
   }
 
   setupEventListeners() {
