@@ -287,6 +287,7 @@ export class PopupManager {
   async handleEnhancement() {
     try {
       this.actionButton.disabled = true;
+      this.actionButton.classList.add('loading');
       this.showStatus('Enhancing text...', 'info');
       
       const params = {};
@@ -315,6 +316,8 @@ export class PopupManager {
       console.error('autotune.popup: Enhancement error:', error);
       this.showStatus(error.message, 'error');
       this.actionButton.disabled = false;
+    } finally {
+      this.actionButton.classList.remove('loading');
     }
   }
 

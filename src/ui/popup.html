@@ -78,15 +78,20 @@
         </div>
 
         <div class="text-section">
-          <div id="text-container"></div>
           <div class="button-section">
-            <button id="action-button" class="enhance">Enhance</button>
+            <div id="status-message" class="status-message"></div>
+            <button id="action-button" class="enhance">
+              <div class="spinner"></div>
+              <span>Enhance</span>
+            </button>
             <div class="action-buttons" style="display: none;">
               <button id="revert-button" class="revert">Revert</button>
               <button id="accept-button" class="accept">Accept</button>
             </div>
           </div>
-          <div id="status-message" class="status-message"></div>
+          <div id="text-container"></div>
+          
+          
         </div>
       </div>
     </div>
