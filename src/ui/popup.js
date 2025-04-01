@@ -138,7 +138,13 @@ export class PopupManager {
     this.currentState = 'enhancing';
 
     try {
-      const result = await this.openaiService.enhanceText(this.originalText);
+      // Get current slider values
+      const params = {};
+      Object.entries(this.sliders).forEach(([param, slider]) => {
+        params[param] = parseInt(slider.value);
+      });
+
+      const result = await this.openaiService.enhanceText(this.originalText, params);
       
       if (result) {
         this.enhancedText = result;
@@ -254,14 +260,20 @@ export class PopupManager {
   }
 
   handleRevert() {
-    this.textContainer.textContent = this.originalText;
+    this.revertMessage();
     this.hideActionButtons();
     this.showStatus('Changes reverted', 'info');
   }
 
-  handleAccept() {
-    this.hideActionButtons();
-    this.showStatus('Changes accepted', 'success');
+  async handleAccept() {
+    try {
+      this.showStatus('Accepting changes...', 'info');
+      await this.acceptMessage();
+      this.hideActionButtons();
+      this.showStatus('Changes accepted', 'success');
+    } catch (error) {
+      this.showStatus(error.message, 'error');
+    }
   }
 
   showStatus(message, type) {
