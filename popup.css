@@ -1,21 +1,79 @@
 /* popup.css */
 .container {
     font-family: sans-serif;
-    padding: 10px;
-    width: 300px; /* typical extension popup width */
+    padding: 15px;
+    width: 350px;
   }
   
-  h2 {
-    margin-top: 0;
-    font-size: 1.2em;
+  .message-section {
+    margin-bottom: 15px;
   }
   
-  #markdown-container {
+  h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.1em;
+    color: #333;
+  }
+  
+  #text-container {
     border: 1px solid #ccc;
     background: #f8f8f8;
-    padding: 8px;
+    padding: 12px;
     border-radius: 4px;
     overflow-x: auto;
     max-height: 200px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    min-height: 100px;
+  }
+  
+  .button-section {
+    margin: 15px 0;
+    text-align: center;
+  }
+  
+  button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+    min-width: 120px;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  
+  button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  button.enhance {
+    background-color: #4CAF50;
+  }
+  
+  button.enhance:hover {
+    background-color: #45a049;
+  }
+  
+  button.accept {
+    background-color: #2196F3;
+  }
+  
+  button.accept:hover {
+    background-color: #1976D2;
+  }
+  
+  button.revert {
+    background-color: #f44336;
+  }
+  
+  button.revert:hover {
+    background-color: #d32f2f;
   }
   
