@@ -286,6 +286,7 @@ export class PopupManager {
 
   async handleEnhancement() {
     try {
+      // Disable button and show loading state immediately
       this.actionButton.disabled = true;
       this.actionButton.classList.add('loading');
       this.showStatus('Enhancing text...', 'info');
@@ -309,14 +310,18 @@ export class PopupManager {
         params
       );
       
+      // Update UI with enhanced text
       this.textContainer.innerHTML = marked.parse(enhancedText);
-      this.showActionButtons();
+      
+      // Show success message and action buttons
       this.showStatus('Enhancement complete!', 'success');
+      this.showActionButtons();
     } catch (error) {
       console.error('autotune.popup: Enhancement error:', error);
       this.showStatus(error.message, 'error');
       this.actionButton.disabled = false;
     } finally {
+      // Remove loading state
       this.actionButton.classList.remove('loading');
     }
   }
@@ -344,10 +349,6 @@ export class PopupManager {
     if (statusMessage) {
       statusMessage.textContent = message;
       statusMessage.className = `status-message ${type}`;
-      setTimeout(() => {
-        statusMessage.textContent = '';
-        statusMessage.className = 'status-message';
-      }, 3000);
     }
   }
 
