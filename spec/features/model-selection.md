@@ -1,71 +1,89 @@
-# Model Selection Feature
+# Model Selection and Enhancement Tuning Feature
 
 ## Overview
-The model selection feature allows users to choose which OpenAI model to use for text enhancement before processing their selected text.
+This feature allows users to select the AI model for text enhancement and fine-tune the enhancement parameters to achieve their desired writing style.
 
-## Requirements
+## Model Selection
+- Users can select from available OpenAI models:
+  - GPT-3.5 Turbo
+  - GPT-4
+  - GPT-4 Turbo
+- The selected model persists across sessions
+- Model selection affects the quality and capabilities of the enhancement
 
-### Functional Requirements
-1. **Model Selection UI**
-   - Dropdown menu in popup before enhancement
-   - List of available OpenAI models
-   - Default selection of cheapest model
-   - Selection persists between sessions
+## Enhancement Tuning
+Users can adjust several parameters to control how their text is enhanced:
 
-2. **Model Configuration**
-   - Support for GPT-3.5-turbo (default)
-   - Support for GPT-4
-   - Support for GPT-4-turbo
-   - Easy addition of new models
+### Tuning Parameters
+1. **Verbosity**
+   - Controls the level of detail and length of the enhanced text
+   - Range: 0-100
+   - 0: Very concise, minimal wording
+   - 100: Very detailed, elaborate explanations
 
-3. **Selection Management**
-   - Selection is saved in storage
-   - Selection is loaded on popup open
-   - Selection is used for all enhancements until changed
+2. **Formality**
+   - Controls the level of formality in the language
+   - Range: 0-100
+   - 0: Very casual, conversational style
+   - 100: Very formal, professional language
+
+3. **Tone**
+   - Controls the emotional tone of the text
+   - Range: 0-100
+   - 0: Very serious, straightforward
+   - 100: Very friendly, warm
+
+4. **Creativity**
+   - Controls how creative or conservative the enhancement is
+   - Range: 0-100
+   - 0: Conservative, factual
+   - 100: Creative, imaginative
+
+5. **Persuasiveness**
+   - Controls how persuasive the text should be
+   - Range: 0-100
+   - 0: Neutral, objective
+   - 100: Very persuasive, convincing
 
 ### Technical Requirements
-1. **Popup**
-   - Must display model selection dropdown
-   - Must save selection to storage
-   - Must load selection on open
-   - Must pass selection to enhancement process
+1. Parameter Storage
+   - All parameters should be stored in Chrome's sync storage
+   - Parameters should persist across sessions
+   - Default values should be set at 50 (neutral) for all parameters
 
-2. **Storage**
-   - Must store selected model
-   - Must handle default value
-   - Must persist across sessions
+2. Parameter Validation
+   - All values must be integers between 0 and 100
+   - Invalid values should be clamped to the valid range
+   - NaN or undefined values should default to 50
 
-3. **OpenAI Service**
-   - Must accept model parameter
-   - Must use selected model for API calls
-   - Must handle model-specific errors
+3. API Integration
+   - Parameters should be included in the enhancement request to the OpenAI API
+   - The API prompt should be adjusted based on these parameters
 
-## User Interface
-1. **Dropdown Design**
-   - Clear labeling
-   - Model names and descriptions
-   - Price information where applicable
-   - Easy to read and use
+### User Interface Requirements
+1. Slider Controls
+   - Each parameter should have a slider input
+   - Sliders should show current value
+   - Sliders should be responsive and update in real-time
 
-2. **Placement**
-   - Before enhance button
-   - Above selected text
-   - Consistent with existing UI
+2. Visual Feedback
+   - Current values should be clearly displayed
+   - Changes should be saved automatically
+   - Loading states should be indicated while saving
 
-## Error Cases
-1. **Selection Errors**
-   - Invalid model selection
-   - Model not available
-   - API key doesn't support model
+### Error Handling
+1. Storage Errors
+   - Failed parameter saves should be reported to the user
+   - Default values should be used if loading fails
 
-2. **Storage Errors**
-   - Failed to save selection
-   - Failed to load selection
-   - Corrupted storage data
+2. Validation Errors
+   - Invalid input should be prevented
+   - Users should be notified of invalid input attempts
 
 ## Success Criteria
-1. User can select different models from dropdown
-2. Selection persists between sessions
-3. Selected model is used for enhancement
-4. Default model is cheapest option
-5. UI is clear and intuitive 
+1. Users can successfully adjust all enhancement parameters
+2. Parameters persist across sessions
+3. Enhancement results reflect the chosen parameters
+4. All parameters are properly validated and sanitized
+5. Error states are properly handled and communicated
+6. UI is responsive and provides clear feedback 
