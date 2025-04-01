@@ -1,3 +1,18 @@
+# Cursor Commit Rules
+
+This directory contains the rules for committing changes in the Cursor project.
+
+## Rule Sets
+
+1. [Conventional Commits](conventional-commits.md) - Format and structure for commit messages
+2. [Test-Driven Development](tdd.md) - Process for test-first development
+3. [Commit Process](commit-process.md) - When and how to create commits
+4. [Rule Management](rule-management.md) - How to create and modify rules
+
+## Overview
+
+Each rule set is documented in its own file for better organization and maintenance. Please refer to the individual files for detailed information about each aspect of the commit process.
+
 # Cursor Commit Rule
 
 This rule ensures that all changes made in Cursor are properly committed after acceptance.
