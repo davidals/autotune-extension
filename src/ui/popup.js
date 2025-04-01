@@ -59,11 +59,16 @@ export class PopupManager {
         this.modelSelect.value = savedModel;
       }
       
-      Object.entries(savedParams).forEach(([param, value]) => {
+      // Initialize all required parameters
+      const requiredParams = ['verbosity', 'formality', 'tone', 'complexity', 'persuasiveness'];
+      requiredParams.forEach(param => {
         const slider = document.getElementById(`${param}-slider`);
         if (slider) {
-          slider.value = value;
+          slider.value = savedParams[param] || 50;
           this.sliders[param] = slider;
+          console.log(`autotune.popup: Initialized ${param} slider with value ${slider.value}`);
+        } else {
+          console.error(`autotune.popup: Missing slider for parameter ${param}`);
         }
       });
     } catch (error) {
