@@ -7,54 +7,94 @@
   </head>
   <body>
     <div class="container">
-      <div class="header">
-        <select id="model-select">
-          <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-          <option value="gpt-4">GPT-4</option>
-          <option value="gpt-4-turbo">GPT-4 Turbo</option>
-        </select>
-      </div>
+      <header>
+        <h1>Autotune</h1>
+        <p class="subtitle">Enhance your text with AI</p>
+      </header>
 
-      <div id="enhancement-controls">
-        <div class="enhancement-controls">
-          <div class="slider-container">
-            <div class="slider-label">Concise</div>
-            <input type="range" id="verbosity" min="0" max="100" value="50" class="slider">
-            <div class="slider-label">Verbose</div>
+      <div class="main-content">
+        <div class="controls-section">
+          <div class="model-selector">
+            <h2>Model</h2>
+            <select id="model-select">
+              <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fastest)</option>
+              <option value="gpt-4">GPT-4 (Most Capable)</option>
+              <option value="gpt-4-turbo">GPT-4 Turbo (Best Balance)</option>
+            </select>
           </div>
-          <div class="slider-container">
-            <div class="slider-label">Casual</div>
-            <input type="range" id="formality" min="0" max="100" value="50" class="slider">
-            <div class="slider-label">Formal</div>
-          </div>
-          <div class="slider-container">
-            <div class="slider-label">Serious</div>
-            <input type="range" id="tone" min="0" max="100" value="50" class="slider">
-            <div class="slider-label">Friendly</div>
-          </div>
-          <div class="slider-container">
-            <div class="slider-label">Simpler</div>
-            <input type="range" id="complexity" min="0" max="100" value="50" class="slider">
-            <div class="slider-label">Sophisticated</div>
-          </div>
-          <div class="slider-container">
-            <div class="slider-label">Informing</div>
-            <input type="range" id="persuasiveness" min="0" max="100" value="50" class="slider">
-            <div class="slider-label">Convincing</div>
+
+          <div class="enhancement-controls">
+            <h2>Parameters</h2>
+            <div class="parameter-card">
+              <div class="parameter-header">
+                <h3>Verbosity</h3>
+              </div>
+              <div class="slider-container">
+                <span class="label">Concise</span>
+                <input type="range" id="verbosity" min="0" max="100" value="50" class="slider">
+                <span class="label">Verbose</span>
+              </div>
+            </div>
+
+            <div class="parameter-card">
+              <div class="parameter-header">
+                <h3>Formality</h3>
+              </div>
+              <div class="slider-container">
+                <span class="label">Casual</span>
+                <input type="range" id="formality" min="0" max="100" value="50" class="slider">
+                <span class="label">Formal</span>
+              </div>
+            </div>
+
+            <div class="parameter-card">
+              <div class="parameter-header">
+                <h3>Tone</h3>
+              </div>
+              <div class="slider-container">
+                <span class="label">Friendly</span>
+                <input type="range" id="tone-slider" class="slider" min="0" max="100" value="50">
+                <span class="label">Serious</span>
+              </div>
+            </div>
+
+            <div class="parameter-card">
+              <div class="parameter-header">
+                <h3>Complexity</h3>
+              </div>
+              <div class="slider-container">
+                <span class="label">Simpler</span>
+                <input type="range" id="complexity-slider" class="slider" min="0" max="100" value="50">
+                <span class="label">Sophisticated</span>
+              </div>
+            </div>
+
+            <div class="parameter-card">
+              <div class="parameter-header">
+                <h3>Persuasiveness</h3>
+              </div>
+              <div class="slider-container">
+                <span class="label">Informing</span>
+                <input type="range" id="persuasiveness-slider" class="slider" min="0" max="100" value="50">
+                <span class="label">Convincing</span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="content">
-        <div id="text-container"></div>
-        <div class="button-container">
-          <button id="action-button" class="action-button">Enhance Text</button>
-          <button id="revert-button" class="action-button">Revert Text</button>
-          <button id="accept-button" class="action-button">Accept Changes</button>
+        <div class="text-section">
+          <div id="text-container"></div>
+          <div class="button-section">
+            <button id="action-button" class="enhance">Enhance</button>
+            <div class="action-buttons" style="display: none;">
+              <button id="revert-button" class="revert">Revert</button>
+              <button id="accept-button" class="accept">Accept</button>
+            </div>
+          </div>
+          <div id="status-message" class="status-message"></div>
         </div>
       </div>
     </div>
-
     <script src="../lib/marked.min.js"></script>
     <script type="module" src="popup.js"></script>
   </body>

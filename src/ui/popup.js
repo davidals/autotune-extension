@@ -1,15 +1,21 @@
 import { OpenAIService } from '../services/openaiService.js';
 import { TextFormatter } from '../utils/textFormatter.js';
+import { EnhancementParams } from '../services/enhancementParams.js';
 
 export class PopupManager {
   constructor() {
     this.textContainer = document.getElementById('text-container');
     this.actionButton = document.getElementById('action-button');
+    this.revertButton = document.getElementById('revert-button');
+    this.acceptButton = document.getElementById('accept-button');
+    this.actionButtons = document.querySelector('.action-buttons');
     this.originalText = '';
     this.enhancedText = '';
     this.currentState = 'original';
     this.openaiService = new OpenAIService();
+    this.enhancementParams = new EnhancementParams();
     this.activeTabId = null;
+    this.sliders = {};
 
     this.initialize();
   }
@@ -25,6 +31,7 @@ export class PopupManager {
         return;
       }
 
+      await this.loadSavedParameters();
       this.setupEventListeners();
       await this.loadFocusedText();
     } catch (error) {
@@ -34,20 +41,55 @@ export class PopupManager {
     }
   }
 
+  async loadSavedParameters() {
+    try {
+      const result = await chrome.storage.sync.get('enhancementParams');
+      const savedParams = result.enhancementParams || this.getDefaultParameters();
+      
+      // Initialize sliders with saved values
+      Object.entries(savedParams).forEach(([param, value]) => {
+        const slider = document.getElementById(`${param}-slider`);
+        if (slider) {
+          slider.value = value;
+          this.sliders[param] = slider;
+        }
+      });
+    } catch (error) {
+      console.error('Error loading saved parameters:', error);
+    }
+  }
+
+  getDefaultParameters() {
+    return {
+      verbosity: 50,
+      formality: 50,
+      tone: 50,
+      complexity: 50,
+      persuasiveness: 50
+    };
+  }
+
+  async saveParameters() {
+    try {
+      const params = {};
+      Object.entries(this.sliders).forEach(([param, slider]) => {
+        params[param] = parseInt(slider.value);
+      });
+      await chrome.storage.sync.set({ enhancementParams: params });
+    } catch (error) {
+      console.error('Error saving parameters:', error);
+    }
+  }
+
   setupEventListeners() {
-    this.actionButton.addEventListener('click', async () => {
-      switch (this.currentState) {
-        case 'original':
-          await this.enhanceMessage();
-          break;
-        case 'enhanced':
-          await this.acceptMessage();
-          break;
-        case 'reverting':
-          this.revertMessage();
-          break;
-      }
+    // Setup slider event listeners
+    Object.entries(this.sliders).forEach(([param, slider]) => {
+      slider.addEventListener('change', () => this.saveParameters());
     });
+
+    this.actionButton.addEventListener('click', () => this.handleEnhancement());
+    this.revertButton.addEventListener('click', () => this.handleRevert());
+    this.acceptButton.addEventListener('click', () => this.handleAccept());
   }
 
   async loadFocusedText() {
@@ -170,6 +212,113 @@ export class PopupManager {
         this.actionButton.className = 'enhance';
         break;
     }
+  }
+
+  showActionButtons() {
+    this.actionButton.style.display = 'none';
+    this.actionButtons.style.display = 'flex';
+    this.revertButton.disabled = false;
+    this.acceptButton.disabled = false;
+  }
+
+  hideActionButtons() {
+    this.actionButton.style.display = 'block';
+    this.actionButtons.style.display = 'none';
+    this.revertButton.disabled = true;
+    this.acceptButton.disabled = true;
+  }
+
+  async handleEnhancement() {
+    try {
+      this.actionButton.disabled = true;
+      this.showStatus('Enhancing text...', 'info');
+      
+      // Get current slider values
+      const params = {};
+      Object.entries(this.sliders).forEach(([param, slider]) => {
+        params[param] = parseInt(slider.value);
+      });
+      
+      const enhancedText = await this.openaiService.enhanceText(
+        this.textContainer.textContent,
+        params
+      );
+      
+      this.textContainer.innerHTML = marked.parse(enhancedText);
+      this.showActionButtons();
+      this.showStatus('Enhancement complete!', 'success');
+    } catch (error) {
+      this.showStatus(error.message, 'error');
+      this.actionButton.disabled = false;
+    }
+  }
+
+  handleRevert() {
+    this.textContainer.textContent = this.originalText;
+    this.hideActionButtons();
+    this.showStatus('Changes reverted', 'info');
+  }
+
+  handleAccept() {
+    this.hideActionButtons();
+    this.showStatus('Changes accepted', 'success');
+  }
+
+  showStatus(message, type) {
+    const statusMessage = document.getElementById('status-message');
+    if (statusMessage) {
+      statusMessage.textContent = message;
+      statusMessage.className = `status-message ${type}`;
+      setTimeout(() => {
+        statusMessage.textContent = '';
+        statusMessage.className = 'status-message';
+      }, 3000);
+    }
+  }
+
+  getParameterSpecs() {
+    return {
+      verbosity: {
+        min: 0,
+        max: 100,
+        default: 50,
+        label: 'Verbosity',
+        leftLabel: 'Concise',
+        rightLabel: 'Detailed'
+      },
+      formality: {
+        min: 0,
+        max: 100,
+        default: 50,
+        label: 'Formality',
+        leftLabel: 'Casual',
+        rightLabel: 'Formal'
+      },
+      tone: {
+        min: 0,
+        max: 100,
+        default: 50,
+        label: 'Tone',
+        leftLabel: 'Friendly',
+        rightLabel: 'Serious'
+      },
+      complexity: {
+        min: 0,
+        max: 100,
+        default: 50,
+        label: 'Complexity',
+        leftLabel: 'Simpler',
+        rightLabel: 'Sophisticated'
+      },
+      persuasiveness: {
+        min: 0,
+        max: 100,
+        default: 50,
+        label: 'Persuasiveness',
+        leftLabel: 'Informing',
+        rightLabel: 'Convincing'
+      }
+    };
   }
 }
 

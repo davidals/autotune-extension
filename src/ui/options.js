@@ -1,90 +1,112 @@
-class OptionsManager {
+export class OptionsManager {
   constructor() {
     // API Key elements
-    this.apiKeyInput = document.getElementById('apiKeyInput');
-    this.saveButton = document.getElementById('saveButton');
-    this.status = document.getElementById('status');
+    this.apiKeyInput = document.getElementById('api-key');
+    this.saveButton = document.getElementById('save-button');
+    this.statusMessage = document.getElementById('status-message');
 
     // Model selection
     this.modelSelect = document.getElementById('modelSelect');
 
     // Parameter sliders
-    this.parameters = {
+    this.sliders = {
       verbosity: document.getElementById('verbosity'),
       formality: document.getElementById('formality'),
       tone: document.getElementById('tone'),
       complexity: document.getElementById('complexity'),
       persuasiveness: document.getElementById('persuasiveness')
     };
+
+    this.initialize();
   }
 
   async initialize() {
-    await this.loadSavedSettings();
-    this.setupEventListeners();
+    try {
+      await this.loadSavedSettings();
+      this.setupEventListeners();
+    } catch (error) {
+      console.error('Error initializing options:', error);
+      this.showStatus('Error loading settings', 'error');
+    }
   }
 
   async loadSavedSettings() {
-    const { 
-      openaiApiKey, 
-      openaiModel,
-      verbosity,
-      formality,
-      tone,
-      complexity,
-      persuasiveness
-    } = await chrome.storage.sync.get([
-      'openaiApiKey',
-      'openaiModel',
-      'verbosity',
-      'formality',
-      'tone',
-      'complexity',
-      'persuasiveness'
-    ]);
-    
-    if (openaiApiKey) {
-      this.apiKeyInput.value = openaiApiKey;
-    }
-    
-    if (openaiModel) {
-      this.modelSelect.value = openaiModel;
-    }
+    try {
+      // Load API key
+      const result = await chrome.storage.sync.get('openaiApiKey');
+      if (result.openaiApiKey) {
+        this.apiKeyInput.value = result.openaiApiKey;
+      }
 
-    // Load saved parameter values
-    if (verbosity) this.parameters.verbosity.value = verbosity;
-    if (formality) this.parameters.formality.value = formality;
-    if (tone) this.parameters.tone.value = tone;
-    if (complexity) this.parameters.complexity.value = complexity;
-    if (persuasiveness) this.parameters.persuasiveness.value = persuasiveness;
+      // Load enhancement parameters
+      const paramsResult = await chrome.storage.sync.get('enhancementParams');
+      const savedParams = paramsResult.enhancementParams || this.getDefaultParameters();
+      
+      // Initialize sliders with saved values
+      Object.entries(savedParams).forEach(([param, value]) => {
+        const slider = document.getElementById(`${param}-slider`);
+        if (slider) {
+          slider.value = value;
+          this.sliders[param] = slider;
+        }
+      });
+
+      // Load model selection
+      const modelResult = await chrome.storage.sync.get('openaiModel');
+      if (modelResult.openaiModel) {
+        this.modelSelect.value = modelResult.openaiModel;
+      }
+    } catch (error) {
+      console.error('Error loading saved settings:', error);
+    }
+  }
+
+  getDefaultParameters() {
+    return {
+      verbosity: 50,
+      formality: 50,
+      tone: 50,
+      complexity: 50,
+      persuasiveness: 50
+    };
+  }
+
+  async saveParameters() {
+    try {
+      const params = {};
+      Object.entries(this.sliders).forEach(([param, slider]) => {
+        params[param] = parseInt(slider.value);
+      });
+      await chrome.storage.sync.set({ enhancementParams: params });
+    } catch (error) {
+      console.error('Error saving parameters:', error);
+    }
   }
 
   setupEventListeners() {
-    // API Key save
-    this.saveButton.addEventListener('click', () => this.handleSave());
+    // Setup slider event listeners
+    Object.entries(this.sliders).forEach(([param, slider]) => {
+      slider.addEventListener('change', () => this.saveParameters());
+    });
+
+    this.saveButton.addEventListener('click', async () => {
+      const apiKey = this.apiKeyInput.value.trim();
+      if (!apiKey) {
+        this.showStatus('Please enter an API key', 'error');
+        return;
+      }
+
+      try {
+        await chrome.storage.sync.set({ openaiApiKey: apiKey });
+        this.showStatus('Settings saved successfully', 'success');
+      } catch (error) {
+        console.error('Error saving settings:', error);
+        this.showStatus('Error saving settings', 'error');
+      }
+    });
 
     // Model selection change
     this.modelSelect.addEventListener('change', () => this.handleModelChange());
-
-    // Parameter slider changes
-    Object.entries(this.parameters).forEach(([param, element]) => {
-      element.addEventListener('input', () => this.handleParameterChange(param));
-    });
-  }
-
-  async handleSave() {
-    const apiKey = this.apiKeyInput.value.trim();
-    if (!apiKey) {
-      this.showStatus('Please enter a valid API key.', 'error');
-      return;
-    }
-
-    try {
-      await chrome.storage.sync.set({ openaiApiKey: apiKey });
-      this.showStatus('API key saved successfully!', 'success');
-    } catch (error) {
-      this.showStatus('Error saving API key. Please try again.', 'error');
-      console.error('Error saving API key:', error);
-    }
   }
 
   async handleModelChange() {
@@ -98,32 +120,17 @@ class OptionsManager {
     }
   }
 
-  async handleParameterChange(parameter) {
-    const value = this.parameters[parameter].value;
-    try {
-      await chrome.storage.sync.set({ [parameter]: parseInt(value) });
-      this.showStatus(`${parameter} parameter saved!`, 'success');
-    } catch (error) {
-      this.showStatus(`Error saving ${parameter} parameter. Please try again.`, 'error');
-      console.error(`Error saving ${parameter} parameter:`, error);
-    }
-  }
-
-  showStatus(message, type = 'info') {
-    this.status.textContent = message;
-    this.status.className = type;
-    
-    if (type === 'success') {
-      setTimeout(() => {
-        this.status.textContent = '';
-        this.status.className = '';
-      }, 2000);
-    }
+  showStatus(message, type) {
+    this.statusMessage.textContent = message;
+    this.statusMessage.className = `status-message ${type}`;
+    setTimeout(() => {
+      this.statusMessage.textContent = '';
+      this.statusMessage.className = 'status-message';
+    }, 3000);
   }
 }
 
-// Initialize the options page
+// Initialize the options page when the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  const optionsManager = new OptionsManager();
-  optionsManager.initialize();
+  new OptionsManager();
 }); 
