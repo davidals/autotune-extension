@@ -305,10 +305,14 @@ export class PopupManager {
       // Set the model before enhancing
       await this.openaiService.setModel(model);
       
+      // Use the original text for enhancement
       const enhancedText = await this.openaiService.enhanceText(
-        this.textContainer.textContent,
+        this.originalText,
         params
       );
+      
+      // Store the enhanced text
+      this.enhancedText = enhancedText;
       
       // Update UI with enhanced text
       this.textContainer.innerHTML = marked.parse(enhancedText);
