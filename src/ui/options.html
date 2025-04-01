@@ -3,16 +3,163 @@
   <head>
     <meta charset="utf-8" />
     <title>Extension Options</title>
-    <!-- You might link a CSS file or add styling here -->
+    <link rel="stylesheet" href="options.css">
   </head>
   <body>
-    <h1>Extension Options</h1>
-    <label for="apiKeyInput">OpenAI API Key:</label>
-    <input type="text" id="apiKeyInput" placeholder="Enter your key here..." />
-    <button id="saveButton">Save</button>
-    <p id="status"></p>
+    <div class="container">
+      <header>
+        <h1>Autotune Extension</h1>
+        <p class="subtitle">Enhance your text with AI-powered tone adjustment</p>
+      </header>
 
-    <!-- In Manifest V3, you can no longer use inline scripts, so we point to a separate JS file -->
+      <section class="api-key-section">
+        <h2>API Configuration</h2>
+        <div class="api-key-input">
+          <label for="apiKeyInput">OpenAI API Key:</label>
+          <input type="password" id="apiKeyInput" placeholder="Enter your key here..." />
+          <button id="saveButton">Save</button>
+        </div>
+        <p id="status"></p>
+      </section>
+
+      <section class="model-selector">
+        <h2>Model Selection</h2>
+        <select id="modelSelect">
+          <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fastest)</option>
+          <option value="gpt-4">GPT-4 (Most Capable)</option>
+          <option value="gpt-4-turbo">GPT-4 Turbo (Best Balance)</option>
+        </select>
+        <p class="model-description">Choose the AI model that best suits your needs. GPT-4 Turbo offers the best balance of speed and capability.</p>
+      </section>
+
+      <section class="parameter-guide">
+        <h2>Enhancement Parameters</h2>
+        <div class="parameter-card">
+          <div class="parameter-header">
+            <h3>Verbosity</h3>
+          </div>
+          <div class="slider-container">
+            <span class="label">Concise</span>
+            <input type="range" class="slider" id="verbosity" min="0" max="100" value="50">
+            <span class="label">Verbose</span>
+          </div>
+          <p class="parameter-description">Control how detailed the enhanced text should be. Lower values produce shorter, more concise text.</p>
+        </div>
+
+        <div class="parameter-card">
+          <div class="parameter-header">
+            <h3>Formality</h3>
+          </div>
+          <div class="slider-container">
+            <span class="label">Casual</span>
+            <input type="range" class="slider" id="formality" min="0" max="100" value="50">
+            <span class="label">Formal</span>
+          </div>
+          <p class="parameter-description">Adjust the level of formality in the text. Higher values make the text more professional and formal.</p>
+        </div>
+
+        <div class="parameter-card">
+          <div class="parameter-header">
+            <h3>Tone</h3>
+          </div>
+          <div class="slider-container">
+            <span class="label">Negative</span>
+            <input type="range" class="slider" id="tone" min="0" max="100" value="50">
+            <span class="label">Positive</span>
+          </div>
+          <p class="parameter-description">Set the emotional tone of the message. Higher values create a more positive and upbeat tone.</p>
+        </div>
+
+        <div class="parameter-card">
+          <div class="parameter-header">
+            <h3>Complexity</h3>
+          </div>
+          <div class="slider-container">
+            <span class="label">Simple</span>
+            <input type="range" class="slider" id="complexity" min="0" max="100" value="50">
+            <span class="label">Complex</span>
+          </div>
+          <p class="parameter-description">Modify the complexity of the language. Higher values use more sophisticated vocabulary and sentence structures.</p>
+        </div>
+
+        <div class="parameter-card">
+          <div class="parameter-header">
+            <h3>Persuasiveness</h3>
+          </div>
+          <div class="slider-container">
+            <span class="label">Neutral</span>
+            <input type="range" class="slider" id="persuasiveness" min="0" max="100" value="50">
+            <span class="label">Persuasive</span>
+          </div>
+          <p class="parameter-description">Adjust the persuasive power of the text. Higher values make the text more convincing and compelling.</p>
+        </div>
+      </section>
+
+      <section class="user-guide">
+        <h2>How to Use Autotune</h2>
+        
+        <div class="guide-step">
+          <h3>1. Getting Started</h3>
+          <p>First, you'll need an OpenAI API key. You can get one from the <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI platform</a>.</p>
+          <ol>
+            <li>Sign up for an OpenAI account if you haven't already</li>
+            <li>Navigate to the API keys section</li>
+            <li>Create a new API key</li>
+            <li>Copy and paste it into the API Key field above</li>
+          </ol>
+        </div>
+
+        <div class="guide-step">
+          <h3>2. Using the Extension</h3>
+          <p>Autotune can be used on any text input field across the web:</p>
+          <ol>
+            <li>Click the Autotune extension icon in your browser toolbar</li>
+            <li>Select your desired model and adjust parameters</li>
+            <li>Paste or type your text in the input field</li>
+            <li>Click "Enhance" to process your text</li>
+            <li>Review the enhanced text and click "Accept" or "Revert"</li>
+          </ol>
+        </div>
+
+        <div class="guide-step">
+          <h3>3. Understanding Parameters</h3>
+          <p>Fine-tune your text enhancement with these parameters:</p>
+          <ul>
+            <li><strong>Verbosity:</strong> Control the length and detail of the output</li>
+            <li><strong>Formality:</strong> Adjust the level of formality in the text</li>
+            <li><strong>Tone:</strong> Set the emotional tone of the message</li>
+            <li><strong>Complexity:</strong> Modify the complexity of the language</li>
+            <li><strong>Persuasiveness:</strong> Adjust the persuasive power of the text</li>
+          </ul>
+        </div>
+
+        <div class="guide-step">
+          <h3>4. Tips for Best Results</h3>
+          <ul>
+            <li>Start with a clear, well-structured input text</li>
+            <li>Experiment with different parameter combinations</li>
+            <li>Use the preview feature to see changes before accepting</li>
+            <li>Save your preferred parameter settings for quick access</li>
+          </ul>
+        </div>
+
+        <div class="guide-step">
+          <h3>5. Troubleshooting</h3>
+          <p>If you encounter any issues:</p>
+          <ul>
+            <li>Verify your API key is valid and has sufficient credits</li>
+            <li>Check your internet connection</li>
+            <li>Try refreshing the page if the extension isn't responding</li>
+            <li>Contact support if issues persist</li>
+          </ul>
+        </div>
+      </section>
+
+      <div class="help-text">
+        <p>Need help? <a href="https://platform.openai.com/api-keys" target="_blank">Get your OpenAI API key</a></p>
+      </div>
+    </div>
+
     <script src="options.js"></script>
   </body>
 </html>

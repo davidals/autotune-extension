@@ -1,0 +1,247 @@
+:root {
+  --primary-color: #4CAF50;
+  --primary-hover: #45a049;
+  --text-color: #333;
+  --text-light: #666;
+  --background: #fff;
+  --card-background: #f8f9fa;
+  --border-color: #e9ecef;
+  --shadow: 0 2px 4px rgba(0,0,0,0.1);
+  --success-color: #28a745;
+  --error-color: #dc3545;
+  --info-color: #17a2b8;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.6;
+  color: var(--text-color);
+  background: var(--background);
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+h1 {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: var(--text-light);
+  font-size: 1.1rem;
+}
+
+section {
+  background: var(--card-background);
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow);
+}
+
+h2 {
+  color: var(--text-color);
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+h3 {
+  color: var(--text-color);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.api-key-section {
+  background: var(--card-background);
+}
+
+.api-key-input {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.api-key-input input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: var(--primary-hover);
+}
+
+#status {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+#status.success {
+  background-color: #d4edda;
+  color: var(--success-color);
+}
+
+#status.error {
+  background-color: #f8d7da;
+  color: var(--error-color);
+}
+
+#status.info {
+  background-color: #d1ecf1;
+  color: var(--info-color);
+}
+
+.model-selector select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.model-description {
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+.parameter-card {
+  background: white;
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.parameter-header {
+  margin-bottom: 1rem;
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.slider {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  background: var(--border-color);
+  border-radius: 2px;
+  outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.label {
+  min-width: 60px;
+  color: var(--text-light);
+}
+
+.parameter-description {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.user-guide {
+  background: white;
+}
+
+.guide-step {
+  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  background: var(--card-background);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.guide-step:last-child {
+  margin-bottom: 0;
+}
+
+.guide-step h3 {
+  color: var(--primary-color);
+  margin-bottom: 1.25rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.guide-step p {
+  margin-bottom: 1.25rem;
+  color: var(--text-color);
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+.guide-step ol,
+.guide-step ul {
+  margin-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.guide-step li {
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+.guide-step strong {
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.help-text {
+  text-align: center;
+  margin-top: 2rem;
+  color: var(--text-light);
+  font-size: 1.1rem;
+}
+
+.help-text a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.help-text a:hover {
+  text-decoration: underline;
+} 
