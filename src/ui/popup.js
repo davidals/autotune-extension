@@ -205,15 +205,12 @@ export class PopupManager {
       if (result) {
         this.enhancedText = result;
         this.textContainer.innerHTML = marked.parse(this.enhancedText);
-        this.updateButtonState('enhanced');
       } else {
         this.textContainer.textContent = 'Error processing the request.';
-        this.updateButtonState('original');
       }
     } catch (error) {
       console.error('autotune.popup: OpenAI API error:', error);
       this.textContainer.textContent = 'Failed to fetch improved text.';
-      this.updateButtonState('original');
     }
   }
 
@@ -236,12 +233,9 @@ export class PopupManager {
         type: 'REPLACE_FOCUSED_TEXT',
         text: cleanedMarkdown
       });
-      
-      this.updateButtonState('reverting');
     } catch (error) {
       console.error('autotune.popup: Error accepting message:', error);
       this.textContainer.textContent = 'Error: Could not update the text.';
-      this.updateButtonState('original');
     }
   }
 
@@ -281,7 +275,9 @@ export class PopupManager {
     try {
       this.showStatus('Accepting changes...', 'info');
       await this.acceptMessage();
-      this.hideActionButtons();
+      this.revertButton.style.display = 'inline-block';
+      this.enhanceButton.style.display = 'inline-block';
+      this.acceptButton.style.display = 'none';
       this.showStatus('Changes accepted', 'success');
     } catch (error) {
       console.error('autotune.popup: Error accepting changes:', error);
@@ -289,34 +285,12 @@ export class PopupManager {
     }
   }
 
-  updateButtonState(state) {
-    this.currentState = state;
-    this.enhanceButton.disabled = false;
-    
-    switch (state) {
-      case 'original':
-        this.enhanceButton.textContent = 'Enhance Message';
-        this.enhanceButton.className = 'enhance';
-        break;
-      case 'enhanced':
-        this.enhanceButton.textContent = 'Accept Changes';
-        this.enhanceButton.className = 'accept';
-        break;
-      case 'reverting':
-        this.enhanceButton.textContent = 'Revert to Original';
-        this.enhanceButton.className = 'revert';
-        break;
-      case 'enhancing':
-        this.enhanceButton.textContent = 'Enhancing...';
-        this.enhanceButton.className = 'enhance';
-        break;
-    }
-  }
-
   showActionButtons() {
     this.enhanceButton.style.display = 'none';
+    this.enhanceButton.disabled = false;
     this.revertButton.style.display = 'inline-block';
     this.acceptButton.style.display = 'inline-block';
+
   }
 
   hideActionButtons() {
@@ -378,49 +352,4 @@ export class PopupManager {
       statusMessage.className = `status-message ${type}`;
     }
   }
-
-  getParameterSpecs() {
-    return {
-      verbosity: {
-        min: 0,
-        max: 100,
-        default: 50,
-        label: 'Verbosity',
-        leftLabel: 'Concise',
-        rightLabel: 'Detailed'
-      },
-      formality: {
-        min: 0,
-        max: 100,
-        default: 50,
-        label: 'Formality',
-        leftLabel: 'Casual',
-        rightLabel: 'Formal'
-      },
-      tone: {
-        min: 0,
-        max: 100,
-        default: 50,
-        label: 'Tone',
-        leftLabel: 'Friendly',
-        rightLabel: 'Serious'
-      },
-      complexity: {
-        min: 0,
-        max: 100,
-        default: 50,
-        label: 'Complexity',
-        leftLabel: 'Simpler',
-        rightLabel: 'Sophisticated'
-      },
-      persuasiveness: {
-        min: 0,
-        max: 100,
-        default: 50,
-        label: 'Persuasiveness',
-        leftLabel: 'Informing',
-        rightLabel: 'Convincing'
-      }
-    };
-  }
-} 
+}
