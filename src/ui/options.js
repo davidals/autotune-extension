@@ -1,9 +1,9 @@
 export class OptionsManager {
   constructor() {
     // API Key elements
-    this.apiKeyInput = document.getElementById('api-key');
-    this.saveButton = document.getElementById('save-button');
-    this.statusMessage = document.getElementById('status-message');
+    this.apiKeyInput = document.getElementById('apiKeyInput');
+    this.saveButton = document.getElementById('saveButton');
+    this.statusMessage = document.getElementById('status');
 
     // Model selection
     this.modelSelect = document.getElementById('modelSelect');
@@ -25,7 +25,7 @@ export class OptionsManager {
       await this.loadSavedSettings();
       this.setupEventListeners();
     } catch (error) {
-      console.error('Error initializing options:', error);
+      console.error('autotune.options: Error initializing options:', error);
       this.showStatus('Error loading settings', 'error');
     }
   }
@@ -42,22 +42,25 @@ export class OptionsManager {
       const paramsResult = await chrome.storage.sync.get('enhancementParams');
       const savedParams = paramsResult.enhancementParams || this.getDefaultParameters();
       
+      console.log('autotune.options: Loading saved parameters:', savedParams);
+      
       // Initialize sliders with saved values
-      Object.entries(savedParams).forEach(([param, value]) => {
-        const slider = document.getElementById(`${param}-slider`);
-        if (slider) {
-          slider.value = value;
-          this.sliders[param] = slider;
+      Object.entries(this.sliders).forEach(([param, slider]) => {
+        if (slider && savedParams[param] !== undefined) {
+          slider.value = savedParams[param];
+          console.log(`autotune.options: Setting ${param} slider to ${savedParams[param]}`);
         }
       });
 
       // Load model selection
       const modelResult = await chrome.storage.sync.get('openaiModel');
-      if (modelResult.openaiModel) {
+      if (modelResult.openaiModel && this.modelSelect) {
         this.modelSelect.value = modelResult.openaiModel;
+        console.log('autotune.options: Loaded model:', modelResult.openaiModel);
       }
     } catch (error) {
-      console.error('Error loading saved settings:', error);
+      console.error('autotune.options: Error loading saved settings:', error);
+      throw error;
     }
   }
 
@@ -75,38 +78,56 @@ export class OptionsManager {
     try {
       const params = {};
       Object.entries(this.sliders).forEach(([param, slider]) => {
-        params[param] = parseInt(slider.value);
+        if (slider) {
+          params[param] = parseInt(slider.value);
+        }
       });
+      
+      console.log('autotune.options: Saving parameters:', params);
       await chrome.storage.sync.set({ enhancementParams: params });
+      this.showStatus('Parameters saved successfully', 'success');
     } catch (error) {
-      console.error('Error saving parameters:', error);
+      console.error('autotune.options: Error saving parameters:', error);
+      this.showStatus('Error saving parameters', 'error');
     }
   }
 
   setupEventListeners() {
     // Setup slider event listeners
     Object.entries(this.sliders).forEach(([param, slider]) => {
-      slider.addEventListener('change', () => this.saveParameters());
-    });
-
-    this.saveButton.addEventListener('click', async () => {
-      const apiKey = this.apiKeyInput.value.trim();
-      if (!apiKey) {
-        this.showStatus('Please enter an API key', 'error');
-        return;
-      }
-
-      try {
-        await chrome.storage.sync.set({ openaiApiKey: apiKey });
-        this.showStatus('Settings saved successfully', 'success');
-      } catch (error) {
-        console.error('Error saving settings:', error);
-        this.showStatus('Error saving settings', 'error');
+      if (slider) {
+        slider.addEventListener('change', () => {
+          console.log(`autotune.options: ${param} slider changed to ${slider.value}`);
+          this.saveParameters();
+        });
       }
     });
+
+    if (this.saveButton) {
+      this.saveButton.addEventListener('click', async () => {
+        const apiKey = this.apiKeyInput.value.trim();
+        if (!apiKey) {
+          this.showStatus('Please enter an API key', 'error');
+          return;
+        }
+
+        try {
+          await chrome.storage.sync.set({ openaiApiKey: apiKey });
+          this.showStatus('API key saved successfully', 'success');
+        } catch (error) {
+          console.error('autotune.options: Error saving API key:', error);
+          this.showStatus('Error saving API key', 'error');
+        }
+      });
+    }
 
     // Model selection change
-    this.modelSelect.addEventListener('change', () => this.handleModelChange());
+    if (this.modelSelect) {
+      this.modelSelect.addEventListener('change', () => {
+        console.log('autotune.options: Model changed to:', this.modelSelect.value);
+        this.handleModelChange();
+      });
+    }
   }
 
   async handleModelChange() {
@@ -116,17 +137,19 @@ export class OptionsManager {
       this.showStatus('Model selection saved!', 'success');
     } catch (error) {
       this.showStatus('Error saving model selection. Please try again.', 'error');
-      console.error('Error saving model selection:', error);
+      console.error('autotune.options: Error saving model selection:', error);
     }
   }
 
   showStatus(message, type) {
-    this.statusMessage.textContent = message;
-    this.statusMessage.className = `status-message ${type}`;
-    setTimeout(() => {
-      this.statusMessage.textContent = '';
-      this.statusMessage.className = 'status-message';
-    }, 3000);
+    if (this.statusMessage) {
+      this.statusMessage.textContent = message;
+      this.statusMessage.className = `status-message ${type}`;
+      setTimeout(() => {
+        this.statusMessage.textContent = '';
+        this.statusMessage.className = 'status-message';
+      }, 3000);
+    }
   }
 }
 
