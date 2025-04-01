@@ -169,6 +169,5 @@ export class PopupManager {
 
 // Initialize the popup when the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  const popup = new PopupManager();
-  popup.initialize();
+  new PopupManager();
 }); 
