@@ -2,17 +2,56 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Popup</title>
-    <!-- Example minimal styling; you could swap in CSS frameworks too -->
+    <title>Autotune</title>
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
     <div class="container">
-      <div class="message-section">
-        <div id="text-container"></div>
+      <div class="header">
+        <select id="model-select">
+          <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+          <option value="gpt-4">GPT-4</option>
+          <option value="gpt-4-turbo">GPT-4 Turbo</option>
+        </select>
       </div>
-      <div class="button-section">
-        <button id="action-button">Enhance Message</button>
+
+      <div id="enhancement-controls">
+        <div class="enhancement-controls">
+          <div class="slider-container">
+            <div class="slider-label">Concise</div>
+            <input type="range" id="verbosity" min="0" max="100" value="50" class="slider">
+            <div class="slider-label">Verbose</div>
+          </div>
+          <div class="slider-container">
+            <div class="slider-label">Casual</div>
+            <input type="range" id="formality" min="0" max="100" value="50" class="slider">
+            <div class="slider-label">Formal</div>
+          </div>
+          <div class="slider-container">
+            <div class="slider-label">Serious</div>
+            <input type="range" id="tone" min="0" max="100" value="50" class="slider">
+            <div class="slider-label">Friendly</div>
+          </div>
+          <div class="slider-container">
+            <div class="slider-label">Simpler</div>
+            <input type="range" id="complexity" min="0" max="100" value="50" class="slider">
+            <div class="slider-label">Sophisticated</div>
+          </div>
+          <div class="slider-container">
+            <div class="slider-label">Informing</div>
+            <input type="range" id="persuasiveness" min="0" max="100" value="50" class="slider">
+            <div class="slider-label">Convincing</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div id="text-container"></div>
+        <div class="button-container">
+          <button id="action-button" class="action-button">Enhance Text</button>
+          <button id="revert-button" class="action-button">Revert Text</button>
+          <button id="accept-button" class="action-button">Accept Changes</button>
+        </div>
       </div>
     </div>
 

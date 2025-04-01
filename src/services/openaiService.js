@@ -17,9 +17,9 @@ export class OpenAIService {
    */
   async initialize() {
     try {
-      const { apiKey } = await chrome.storage.sync.get('apiKey');
-      if (apiKey) {
-        this.apiKey = apiKey;
+      const { openaiApiKey } = await chrome.storage.sync.get('openaiApiKey');
+      if (openaiApiKey) {
+        this.apiKey = openaiApiKey;
       }
     } catch (error) {
       console.error('Failed to load API key:', error);
@@ -83,11 +83,26 @@ export class OpenAIService {
     const params = this.enhancementParams.getPromptParameters();
     
     return `You are a professional writing assistant. Enhance the provided text according to these parameters:
-- Verbosity: ${params.verbosity}% (0: very concise, 100: very detailed)
-- Formality: ${params.formality}% (0: very casual, 100: very formal)
-- Tone: ${params.tone}% (0: very serious, 100: very friendly)
-- Creativity: ${params.creativity}% (0: conservative, 100: creative)
-- Persuasiveness: ${params.persuasiveness}% (0: neutral, 100: very persuasive)
+
+- Verbosity (${params.verbosity}):
+  * 0: Extremely concise, using minimal words to convey meaning
+  * 100: Thoroughly detailed, including comprehensive explanations and examples
+
+- Formality (${params.formality}):
+  * 0: Very casual, using everyday language, contractions, and informal expressions
+  * 100: Highly formal, using sophisticated vocabulary and proper grammar structures
+
+- Tone (${params.tone}):
+  * 0: Serious and professional, maintaining a business-like demeanor
+  * 100: Friendly and approachable, using warm and engaging language
+
+- Complexity (${params.complexity}):
+  * 0: Simple and straightforward, using basic vocabulary and clear sentence structures
+  * 100: Sophisticated and nuanced, using advanced vocabulary and complex sentence patterns
+
+- Persuasiveness (${params.persuasiveness}):
+  * 0: Informative and neutral, focusing on presenting facts objectively
+  * 100: Convincing and compelling, using persuasive techniques and emotional appeal
 
 Please enhance the text while maintaining its core meaning and structure.`;
   }

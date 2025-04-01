@@ -6,7 +6,7 @@ export class EnhancementParams {
     this._verbosity = 50;
     this._formality = 50;
     this._tone = 50;
-    this._creativity = 50;
+    this._complexity = 50;
     this._persuasiveness = 50;
     this._changeListeners = new Set();
   }
@@ -21,7 +21,7 @@ export class EnhancementParams {
         this.setVerbosity(enhancementParams.verbosity);
         this.setFormality(enhancementParams.formality);
         this.setTone(enhancementParams.tone);
-        this.setCreativity(enhancementParams.creativity);
+        this.setComplexity(enhancementParams.complexity);
         this.setPersuasiveness(enhancementParams.persuasiveness);
       }
     } catch (error) {
@@ -52,7 +52,7 @@ export class EnhancementParams {
           verbosity: this._verbosity,
           formality: this._formality,
           tone: this._tone,
-          creativity: this._creativity,
+          complexity: this._complexity,
           persuasiveness: this._persuasiveness
         }
       });
@@ -81,7 +81,7 @@ export class EnhancementParams {
   get verbosity() { return this._verbosity; }
   get formality() { return this._formality; }
   get tone() { return this._tone; }
-  get creativity() { return this._creativity; }
+  get complexity() { return this._complexity; }
   get persuasiveness() { return this._persuasiveness; }
 
   // Setters
@@ -103,10 +103,10 @@ export class EnhancementParams {
     this._notifyChange('tone', this._tone);
   }
 
-  setCreativity(value) {
-    this._creativity = this._validateValue(value);
+  setComplexity(value) {
+    this._complexity = this._validateValue(value);
     this._saveToStorage();
-    this._notifyChange('creativity', this._creativity);
+    this._notifyChange('complexity', this._complexity);
   }
 
   setPersuasiveness(value) {
@@ -123,7 +123,7 @@ export class EnhancementParams {
       verbosity: this._verbosity,
       formality: this._formality,
       tone: this._tone,
-      creativity: this._creativity,
+      complexity: this._complexity,
       persuasiveness: this._persuasiveness
     };
   }
@@ -136,7 +136,7 @@ export class EnhancementParams {
       verbosity: this._verbosity / 100,
       formality: this._formality / 100,
       tone: this._tone / 100,
-      creativity: this._creativity / 100,
+      complexity: this._complexity / 100,
       persuasiveness: this._persuasiveness / 100
     };
   }
