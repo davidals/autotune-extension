@@ -24,7 +24,7 @@ export class OpenAIService {
       }
       return false;
     } catch (error) {
-      console.error('Failed to load API key:', error);
+      console.error('autotune.services.openai: Failed to load API key:', error);
       return false;
     }
   }
@@ -115,47 +115,69 @@ export class OpenAIService {
   * 0: Informative and neutral, focusing on presenting facts objectively
   * 100: Convincing and compelling, using persuasive techniques and emotional appeal
 
-Please enhance the text while maintaining its core meaning and structure.`;
+Please enhance the text while maintaining its core meaning and ensuring it reads naturally.`;
   }
 
   /**
-   * Enhance text using OpenAI API
-   * @param {string} text - The text to enhance
+   * Enhance text using OpenAI's API
+   * @param {string} text The text to enhance
+   * @param {Object} params Enhancement parameters
    * @returns {Promise<string>} The enhanced text
    */
-  async enhanceText(text) {
+  async enhanceText(text, params) {
     if (!this.apiKey) {
-      throw new Error('OpenAI API key not set');
+      throw new Error('API key not set');
     }
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.apiKey}`
-      },
-      body: JSON.stringify({
-        model: this.model,
-        messages: [
-          {
-            role: 'system',
-            content: this._generateSystemPrompt()
-          },
-          {
-            role: 'user',
-            content: text
-          }
-        ],
-        temperature: 0.7
-      })
+    if (!text) {
+      throw new Error('Text is required');
+    }
+
+    // Set each parameter individually
+    if (params.verbosity !== undefined) this.enhancementParams.setVerbosity(params.verbosity);
+    if (params.formality !== undefined) this.enhancementParams.setFormality(params.formality);
+    if (params.tone !== undefined) this.enhancementParams.setTone(params.tone);
+    if (params.complexity !== undefined) this.enhancementParams.setComplexity(params.complexity);
+    if (params.persuasiveness !== undefined) this.enhancementParams.setPersuasiveness(params.persuasiveness);
+
+    const systemPrompt = this._generateSystemPrompt();
+    const messages = [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: text }
+    ];
+
+    console.log('autotune.services.openai: Making API request:', {
+      model: this.model,
+      parameters: params,
+      textLength: text.length
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error?.message || 'Failed to enhance text');
-    }
+    try {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({
+          model: this.model,
+          messages: messages,
+          temperature: 0.7,
+          max_tokens: 2000
+        })
+      });
 
-    const data = await response.json();
-    return data.choices[0].message.content;
+      if (!response.ok) {
+        const error = await response.json();
+        console.error('autotune.services.openai: API request failed:', error);
+        throw new Error(`API request failed: ${error.error?.message || response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data.choices[0].message.content;
+    } catch (error) {
+      console.error('autotune.services.openai: API request error:', error);
+      throw error;
+    }
   }
 } 
