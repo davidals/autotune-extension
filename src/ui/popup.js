@@ -204,7 +204,7 @@ export class PopupManager {
       
       if (result) {
         this.enhancedText = result;
-        this.textContainer.innerHTML = marked.parse(this.enhancedText);
+        this.textContainer.textContent = this.enhancedText;
       } else {
         this.textContainer.textContent = 'Error processing the request.';
       }
@@ -330,7 +330,7 @@ export class PopupManager {
       this.enhancedText = enhancedText;
       
       // Update UI with enhanced text
-      this.textContainer.innerHTML = marked.parse(enhancedText);
+      this.textContainer.textContent = enhancedText;
       
       // Show success message and action buttons
       this.showStatus('Enhancement complete!', 'success');
