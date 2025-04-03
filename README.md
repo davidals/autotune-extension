@@ -6,7 +6,7 @@ A Chrome extension that enhances your text using AI, making your writing more pr
 
 - **Text Enhancement**: Improve your writing with AI-powered suggestions
 - **Customizable Parameters**: Fine-tune the enhancement style to match your needs
-- **Easy to Use**: Simply select text and click the extension icon to enhance
+- **Easy to Use**: Simply focus on any text field and click the extension icon to enhance
 - **Multiple Enhancement Modes**: Choose from various enhancement styles
 - **Real-time Preview**: See how your text will look before applying changes
 
@@ -43,7 +43,7 @@ A Chrome extension that enhances your text using AI, making your writing more pr
 
 ## Usage
 
-1. Select any text on a webpage
+1. Click into any text field on a webpage (like a text input, textarea, or contenteditable element)
 2. Click the Autotune extension icon
 3. Choose your desired enhancement style
 4. Click "Enhance" to apply the changes
