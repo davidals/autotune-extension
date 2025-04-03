@@ -76,12 +76,13 @@ autotune/
 
 ## Development Process
 
-This project was developed using Cursor AI Agent, an AI-powered development environment. The development process followed these principles:
+This extension was developed using Cursor AI Agent in YOLO mode, which means rapid development with AI assistance. All content and code was written via Cursor AI Agent, except for commits marked with `no-vibes` which indicate code written independently by a human.
 
-- Most of the code was written with the assistance of Cursor AI Agent
-- Commits marked with `no-vibes` indicate code that was written independently by a human developer without AI assistance
-- The project follows test-driven development (TDD) practices
-- All code changes are thoroughly tested before being committed
+The development process follows:
+- AI-assisted development using Cursor's YOLO mode for rapid prototyping
+- Test-driven development (TDD) practices
+- Thorough testing before committing code
+- Clear distinction between AI-generated and human-written code through commit messages
 
 ## Contributing
 
